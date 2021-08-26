@@ -129,7 +129,7 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: nakama
+      LogGroupName: !Join ['', ['nakama-', !Ref "AWS::StackName"]]
       RetentionInDays: !Ref LogRetentionDays
 
   ExecutionIamRole:
@@ -259,7 +259,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: nakama
+              awslogs-group: !Join ['', ['nakama-', !Ref "AWS::StackName"]]
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: Nakama
@@ -268,7 +268,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: nakama
+              awslogs-group: !Join ['', ['nakama-', !Ref "AWS::StackName"]]
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: !Ref "AWS::StackName"
           Essential: true
