@@ -19,7 +19,13 @@ Parameters:
     AllowedValues: [1, 3, 5, 7, 14, 30]
   DBPassword:
     Type: String
-    Description: "Master password for the SQL Database"
+    Description: "Master password for the SQL Database - at least 8 characters"
+    MinLength: 8
+    NoEcho: True
+  DBUsername:
+    Type: String
+    Description: "Master username for the SQL Database (cannot be nakama, awsuser, sql)"
+    AllowedPattern: "^((?!^(awsuser|nakama|sql|postgres)$).)*$"
   DBInstanceClass:
     Type: String
     Default: "db.t3.micro"
@@ -101,6 +107,7 @@ Resources:
       AllocatedStorage: 10
       MaxAllocatedStorage: 16384
       StorageType: gp2
+      StorageEncrypted: true
       BackupRetentionPeriod: 7
       PreferredBackupWindow: "08:00-09:00"
       PreferredMaintenanceWindow: "mon:10:00-mon:12:00"
@@ -111,7 +118,8 @@ Resources:
       VPCSecurityGroups: [ !Ref NakamaSG ]
       Engine: postgres
       EngineVersion: "13.2"
-      MasterUsername: postgres
+      DBName: !Ref DBUsername
+      MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Port: 5432
       Tags:
@@ -187,6 +195,7 @@ Resources:
       FileSystemTags:
         - Key: Name
           Value: !Ref "AWS::StackName"
+      Encrypted: true
       FileSystemPolicy:
         Version: "2012-10-17"
         Statement:
@@ -243,9 +252,19 @@ Resources:
       Cpu: 1024
       Memory: 2048
       ContainerDefinitions:
+        - Name: Setup
+          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:dev6-', !Ref NakamaVersion ]]
+          Command: [ !Ref DBUsername, !Ref DBPassword, !GetAtt Database.Endpoint.Address, "-setup" ]
+          Essential: false
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: nakama
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: Nakama
-          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:', !Ref NakamaVersion ]]
-          Command: [ !GetAtt Database.Endpoint.Address, !Ref DBPassword, !Ref S3Bucket ]
+          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:dev6-', !Ref NakamaVersion ]]
+          Command: [ !Ref DBUsername, !Ref DBPassword, !GetAtt Database.Endpoint.Address, !Ref S3Bucket ]
           LogConfiguration:
             LogDriver: awslogs
             Options:
