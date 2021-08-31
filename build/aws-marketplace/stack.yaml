@@ -253,7 +253,7 @@ Resources:
       Memory: 2048
       ContainerDefinitions:
         - Name: Setup
-          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:dev6-', !Ref NakamaVersion ]]
+          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:v', !Ref NakamaVersion ]]
           Command: [ !Ref DBUsername, !Ref DBPassword, !GetAtt Database.Endpoint.Address, "-setup" ]
           Essential: false
           LogConfiguration:
@@ -263,7 +263,7 @@ Resources:
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: Nakama
-          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:dev6-', !Ref NakamaVersion ]]
+          Image: !Join ['', ['709825985650.dkr.ecr.us-east-1.amazonaws.com/heroic-labs/nakama:v', !Ref NakamaVersion ]]
           Command: [ !Ref DBUsername, !Ref DBPassword, !GetAtt Database.Endpoint.Address, !Ref S3Bucket ]
           LogConfiguration:
             LogDriver: awslogs
