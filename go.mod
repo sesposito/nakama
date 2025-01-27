@@ -1,6 +1,6 @@
 module github.com/heroiclabs/nakama/v3
 
-go 1.23.5
+go 1.23.4
 
 require (
 	github.com/blugelabs/bluge v0.2.2
@@ -75,3 +75,5 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
 )
+
+replace github.com/heroiclabs/nakama-common => ../nakama-common
